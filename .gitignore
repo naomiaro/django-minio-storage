@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-minio/.minio.sys/
+.minio.sys/
 minio/photos/
