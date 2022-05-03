@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  minio:
+    image: minio/minio
+    hostname: "minio"
+    volumes:
+      - ./minio:/minio_files
+    env_file:
+      - minio.env
+    command: 'minio server /minio_files --console-address ":9001"'
+    ports:
+      - 9000:9000
+      - 9001:9001
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    env_file:
+      - minio.env
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb --quiet myminio/photos;
+      /usr/bin/mc policy set none myminio/photos;
+      "
+  backend:
+    build: ./miniotest
+    command: >
+      sh -c "python manage.py migrate &&
+            python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - minio.env
+    volumes:
+      - ./miniotest:/usr/src/app
+    ports:
+      - "8000:8000"
