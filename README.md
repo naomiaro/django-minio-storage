@@ -6,6 +6,6 @@ A small demo showing how to configure django-storages to use a private minio buc
 ## Development
 In file `/etc/hosts` add
 
-sh```
+```sh
 127.0.0.1 minio
 ```
